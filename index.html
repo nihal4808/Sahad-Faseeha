@@ -356,7 +356,7 @@
             <div class="ping"></div>
         </button>
     </div>
-    <audio id="bg-music" loop autoplay muted preload="auto">
+    <audio id="bg-music" loop muted preload="auto">
         <source src="assets/Audio.mp3" type="audio/mpeg">
     </audio>
 
@@ -593,12 +593,7 @@
 
         // Auto‑play on page load (muted) and unmute after a short delay
         window.addEventListener('DOMContentLoaded', () => {
-            // Audio will start playing automatically because it's muted
-            setTimeout(() => {
-                audio.muted = false;
-                isMuted = false;
-                setPlayingState();
-            }, 2000);
+            startMusic();
         });
 
         // Mute / Unmute toggle
