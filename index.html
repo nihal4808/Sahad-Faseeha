@@ -336,9 +336,187 @@
             .event-card { padding: 2rem 1rem; }
         }
 
-    </style>
+        /* Splash Overlay Styles */
+        #splash-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            overflow: hidden;
+        }
+        .splash-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #FFFDF9 0%, #ffeef2 100%);
+            z-index: -1;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .splash-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(255,224,230,0.4), transparent 45%),
+                        radial-gradient(circle at 70% 70%, rgba(255,224,230,0.3), transparent 45%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+        @keyframes bgFloat {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 10% 10%; }
+            100% { background-position: 0% 0%; }
+        }
+        #splash-logo {
+            width: 150px;
+            height: auto;
+            animation: floatLogo 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px rgba(255,215,0,0.5));
+            z-index: 10;
+        }
+        @keyframes floatLogo {
+            0%,100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.03); }
+        }
+        #tap-text {
+            margin-top: 1rem;
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            color: var(--foreground);
+            opacity: 0;
+            animation: fadeInText 2s forwards 0.5s;
+            z-index: 10;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        @keyframes fadeInText {
+            from { opacity:0; transform: translateY(20px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+        #hand-icon {
+            margin-top: 0.5rem;
+            width: 30px;
+            height: 30px;
+            background: url('assets/tap.png') no-repeat center / contain;
+            animation: handTap 2s infinite ease-in-out;
+            z-index: 10;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        @keyframes handTap {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+        .ripple {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255,215,0,0.4);
+            animation: rippleAnim 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            pointer-events: none;
+            z-index: 5;
+        }
+        @keyframes rippleAnim {
+            to { transform: scale(40); opacity: 0; }
+        }
+        
+        /* Dismissed state */
+        #splash-overlay.dismissed {
+            pointer-events: none;
+        }
+        #splash-overlay.dismissed .splash-bg {
+            opacity: 0;
+        }
+        #splash-overlay.dismissed #tap-text,
+        #splash-overlay.dismissed #hand-icon {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        /* Cover Overlay Styles */
+        #cover-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #cover-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .cover-wrapper {
+            position: relative;
+            height: 80vh;
+            max-height: 800px;
+            aspect-ratio: 1023 / 1537;
+            background: #fff;
+            border-radius: 1.5rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: scale(1.08);
+            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        #cover-overlay.reveal-inv .cover-wrapper {
+            transform: scale(1);
+        }
+        #cover-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #logo-target {
+            position: absolute;
+            left: 50%;
+            top: 24.5%;
+            transform: translate(-50%, -50%);
+            width: 14.5%;
+            aspect-ratio: 1;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Responsive Cover Card */
+        @media (max-width: 600px) {
+            .cover-wrapper {
+                width: 90vw;
+                height: auto;
+                aspect-ratio: 1023 / 1537;
+                border-radius: 1rem;
+            }
+        }
+
+        body.no-scroll {
+            overflow: hidden;
+            height: 100vh;
+        }
+        </style>
 </head>
-<body>
+<body class="no-scroll">
+    
+    <!-- Splash Entrance Overlay -->
+    <div id="splash-overlay">
+        <div class="splash-bg"></div>
+        <img src="assets/tap.png" id="splash-logo" alt="Logo" />
+        <div id="tap-text">Tap to Enter</div>
+        <div id="hand-icon"></div>
+    </div>
+
+    <!-- Invitation Cover Image Overlay -->
+    <div id="cover-overlay">
+        <div class="cover-wrapper">
+            <img src="assets/front.PNG" id="cover-img" alt="Cover" />
+            <div id="logo-target"></div>
+        </div>
+    </div>
 
     <!-- Animated Background Blobs -->
     <div class="bg-blob blob-1"></div>
@@ -552,165 +730,252 @@
             <h2 class="font-script" style="font-size: 4rem; margin-bottom: 0.5rem; color: var(--color-sage-green);">S & F</h2>
             <p class="font-sans uppercase tracking-widest" style="font-size: 0.85rem; color: #888;">August 3, 2026</p>
         </div>
-    </footer>
+    </footer><!-- Scripts -->
+<script>
+    // Safe icon initialization
+    function safeCreateIcons() {
+        if (typeof lucide !== 'undefined' && lucide.createIcons) {
+            try {
+                lucide.createIcons();
+            } catch (e) {
+                console.error('Error creating icons:', e);
+            }
+        }
+    }
+    safeCreateIcons();
 
-    <!-- Scripts -->
-    <script>
-        // Initialize Icons
-        lucide.createIcons();
+    // ── Music Player Logic ──────────────────────────────────────────
+    const musicBtn  = document.getElementById('music-toggle');
+    const audio     = document.getElementById('bg-music');
+    const musicIcon = document.getElementById('music-icon');
+    const musicLabel = document.getElementById('music-label');
+    audio.volume = 0.5;
+    audio.muted = true; // start muted to satisfy autoplay policy
+    let hasStarted = false;
+    let isMuted = true; // reflects current muted state
 
-        // ── Music Player Logic ──────────────────────────────────────────
-        const musicBtn  = document.getElementById('music-toggle');
-        const audio     = document.getElementById('bg-music');
-        const musicIcon = document.getElementById('music-icon');
-        const musicLabel = document.getElementById('music-label');
-        audio.volume = 0.5;
-        audio.muted = true; // start muted to satisfy autoplay policy
-        let hasStarted = false;
-        let isMuted = true; // reflects current muted state
+    function setPlayingState() {
+        musicBtn.classList.add('playing');
+        musicBtn.classList.remove('muted');
+        musicIcon.setAttribute('data-lucide', 'volume-2');
+        musicLabel.textContent = isMuted ? 'Unmute' : 'Mute';
+        safeCreateIcons();
+    }
 
-        function setPlayingState() {
+    function startMusic() {
+        if (!hasStarted) {
+            audio.play().then(() => {
+                hasStarted = true;
+                // After a short delay, unmute automatically
+                setTimeout(() => {
+                    audio.muted = false;
+                    isMuted = false;
+                    setPlayingState();
+                }, 2000);
+            }).catch(() => {});
+        }
+    }
+
+    // Auto‑play on page load (muted) – start immediately
+    startMusic();
+
+    // Mute / Unmute toggle
+    musicBtn.addEventListener('click', () => {
+        if (!hasStarted) { startMusic(); return; }
+        isMuted = !isMuted;
+        audio.muted = isMuted;
+        if (isMuted) {
+            musicBtn.classList.remove('playing');
+            musicBtn.classList.add('muted');
+            musicIcon.setAttribute('data-lucide', 'volume-x');
+            musicLabel.textContent = 'Unmute';
+        } else {
             musicBtn.classList.add('playing');
             musicBtn.classList.remove('muted');
             musicIcon.setAttribute('data-lucide', 'volume-2');
-            musicLabel.textContent = isMuted ? 'Unmute' : 'Mute';
-            lucide.createIcons();
+            musicLabel.textContent = 'Mute';
         }
+        safeCreateIcons();
+    });
 
-        function startMusic() {
-            if (!hasStarted) {
-                audio.play().then(() => {
-                    hasStarted = true;
-                    // After a short delay, unmute automatically
+    // ── Entrance Splash Animation ─────────────────────────────────────
+    const splashOverlay = document.getElementById('splash-overlay');
+    const splashLogo = document.getElementById('splash-logo');
+    const coverOverlay = document.getElementById('cover-overlay');
+    const logoTarget = document.getElementById('logo-target');
+
+    function createRipple() {
+        const ripple = document.createElement('div');
+        ripple.className = 'ripple';
+        const rect = splashLogo.getBoundingClientRect();
+        ripple.style.left = `${rect.left + rect.width / 2 - 10}px`;
+        ripple.style.top = `${rect.top + rect.height / 2 - 10}px`;
+        document.body.appendChild(ripple);
+        ripple.addEventListener('animationend', () => ripple.remove());
+    }
+
+    function startEntrance() {
+        splashOverlay.removeEventListener('click', startEntrance);
+        splashOverlay.removeEventListener('touchstart', startEntrance);
+        
+        // 1. Force music start
+        startMusic();
+        
+        // 2. Stop floating animation to enable transform transition
+        splashLogo.style.animation = 'none';
+        
+        // 3. User feedback: scale logo down slightly
+        splashLogo.style.transition = 'transform 0.2s ease-out';
+        splashLogo.style.transform = 'scale(0.9)';
+        createRipple();
+
+        // 4. Start flight and transition to cover card
+        setTimeout(() => {
+            // Get current and target bounding boxes
+            const startRect = splashLogo.getBoundingClientRect();
+            const targetRect = logoTarget.getBoundingClientRect();
+            
+            const currentWidth = startRect.width || 150;
+            const targetWidth = targetRect.width || 80;
+            
+            const dx = targetRect.left - startRect.left;
+            const dy = targetRect.top - startRect.top;
+            const scale = targetWidth / currentWidth;
+            
+            // Apply translation and scale to fly the logo to the target on the cover card
+            splashLogo.style.transition = 'transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)';
+            splashLogo.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+            
+            // Fade out the splash screen background and texts
+            splashOverlay.classList.add('dismissed');
+            
+            // Fade in the cover card overlay
+            coverOverlay.classList.add('visible');
+            coverOverlay.classList.add('reveal-inv');
+            
+            // 5. At the end of the flight (1.2s), dissolve the logo into the cover image
+            setTimeout(() => {
+                splashLogo.style.transition = 'opacity 0.4s ease';
+                splashLogo.style.opacity = '0';
+                
+                // 6. Keep cover visible for a brief moment, then fade out cover to reveal main site
+                setTimeout(() => {
+                    coverOverlay.style.transition = 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)';
+                    coverOverlay.style.opacity = '0';
+                    
+                    // Enable scroll
+                    document.body.classList.remove('no-scroll');
+                    
+                    // Fully clean up elements after fade out
                     setTimeout(() => {
-                        audio.muted = false;
-                        isMuted = false;
-                        setPlayingState();
-                    }, 2000);
-                }).catch(() => {});
-            }
+                        splashOverlay.style.display = 'none';
+                        coverOverlay.style.display = 'none';
+                    }, 1000);
+                }, 1500); // cover card visible duration
+            }, 1200); // logo flight duration
+        }, 200);
+    }
+
+    splashOverlay.addEventListener('click', startEntrance);
+    splashOverlay.addEventListener('touchstart', startEntrance);
+    splashOverlay.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') startEntrance();
+    });
+    splashOverlay.setAttribute('tabindex', '0');
+    splashOverlay.setAttribute('role', 'button');
+    splashOverlay.setAttribute('aria-label', 'Tap to enter the invitation');
+
+    // ── Countdown Logic ─────────────────────────────────────
+    const targetDate = new Date("2026-08-03T12:30:00+05:30").getTime();
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+        if (distance > 0) {
+            document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+            document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
         }
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
 
-        // Auto‑play on page load (muted) and unmute after a short delay
-        window.addEventListener('DOMContentLoaded', () => {
-            startMusic();
-        });
-
-        // Mute / Unmute toggle
-        musicBtn.addEventListener('click', () => {
-            if (!hasStarted) { startMusic(); return; }
-            isMuted = !isMuted;
-            audio.muted = isMuted;
-            if (isMuted) {
-                musicBtn.classList.remove('playing');
-                musicBtn.classList.add('muted');
-                musicIcon.setAttribute('data-lucide', 'volume-x');
-                musicLabel.textContent = 'Unmute';
-            } else {
-                musicBtn.classList.add('playing');
-                musicBtn.classList.remove('muted');
-                musicIcon.setAttribute('data-lucide', 'volume-2');
-                musicLabel.textContent = 'Mute';
+    // ── Scroll Animations (Intersection Observer) ─────────────────────
+    const fadeElements = document.querySelectorAll('.fade-up, .svg-divider');
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px 0px -50px 0px',
+        threshold: 0.1
+    };
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
             }
-            lucide.createIcons();
         });
+    }, observerOptions);
+    fadeElements.forEach(el => observer.observe(el));
 
-        // Countdown Logic
-        const targetDate = new Date("2026-08-03T12:30:00+05:30").getTime();
-        
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-
-            if (distance > 0) {
-                document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
-                document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
-                document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
-                document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
-            }
-        }
-        
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
-
-        // Scroll Animations (Intersection Observer)
-        const fadeElements = document.querySelectorAll('.fade-up, .svg-divider');
-        
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px 0px -50px 0px',
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        fadeElements.forEach(el => observer.observe(el));
-
-        // Parallax Effect
-        window.addEventListener('scroll', () => {
-            const scrolled = window.scrollY;
-            document.querySelectorAll('.parallax').forEach(el => {
-                const speed = el.getAttribute('data-speed') || 0.05;
-                el.style.transform = `translateY(${scrolled * speed}px)`;
-            });
+    // ── Parallax Effect ─────────────────────────────────────
+    window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        document.querySelectorAll('.parallax').forEach(el => {
+            const speed = el.getAttribute('data-speed') || 0.05;
+            el.style.transform = `translateY(${scrolled * speed}px)`;
         });
+    });
 
-        // Advanced Floating Background Particles
-        const floatingContainer = document.getElementById('floating-elements');
+    // Advanced Floating Background Particles
+    const floatingContainer = document.getElementById('floating-elements');
+    
+    // Shapes for variety (circles/petals, stars, diamonds)
+    const shapes = [
+        '50%', // circle
+        '50%', // circle
+        '0 50% 50% 50%', // petal shape
+        '10% 90% 10% 90%', // leaf shape
+    ];
+    
+    const colors = [
+        'var(--color-blush-pink)',
+        'var(--color-champagne)',
+        'var(--color-ivory)',
+        'rgba(255,255,255,0.8)'
+    ];
+
+    const animations = ['float-item', 'float-sway', 'float-spin'];
+
+    for (let i = 0; i < 40; i++) {
+        const el = document.createElement('div');
         
-        // Shapes for variety (circles/petals, stars, diamonds)
-        const shapes = [
-            '50%', // circle
-            '50%', // circle
-            '0 50% 50% 50%', // petal shape
-            '10% 90% 10% 90%', // leaf shape
-        ];
+        const animClass = animations[Math.floor(Math.random() * animations.length)];
+        el.className = `float-item ${animClass}`;
         
-        const colors = [
-            'var(--color-blush-pink)',
-            'var(--color-champagne)',
-            'var(--color-ivory)',
-            'rgba(255,255,255,0.8)'
-        ];
+        const size = 3 + Math.random() * 12;
+        const left = Math.random() * 100;
+        const delay = Math.random() * 15;
+        const duration = 15 + Math.random() * 25;
+        const opacity = 0.2 + Math.random() * 0.5;
+        const drift = (Math.random() * 40 - 20) + 'vw';
+        
+        el.style.width = `${size}px`;
+        el.style.height = `${size}px`;
+        el.style.left = `${left}vw`;
+        el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        el.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
+        el.style.filter = size > 8 ? 'blur(2px)' : 'blur(0.5px)';
+        
+        el.style.animationDelay = `${delay}s`;
+        el.style.animationDuration = `${duration}s`;
+        
+        // Custom properties for keyframes
+        el.style.setProperty('--max-opacity', opacity);
+        el.style.setProperty('--drift', drift);
 
-        const animations = ['float-item', 'float-sway', 'float-spin'];
+        floatingContainer.appendChild(el);
+    }
+</script>
 
-        for (let i = 0; i < 40; i++) {
-            const el = document.createElement('div');
-            
-            const animClass = animations[Math.floor(Math.random() * animations.length)];
-            el.className = `float-item ${animClass}`;
-            
-            const size = 3 + Math.random() * 12;
-            const left = Math.random() * 100;
-            const delay = Math.random() * 15;
-            const duration = 15 + Math.random() * 25;
-            const opacity = 0.2 + Math.random() * 0.5;
-            const drift = (Math.random() * 40 - 20) + 'vw';
-            
-            el.style.width = `${size}px`;
-            el.style.height = `${size}px`;
-            el.style.left = `${left}vw`;
-            el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            el.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
-            el.style.filter = size > 8 ? 'blur(2px)' : 'blur(0.5px)';
-            
-            el.style.animationDelay = `${delay}s`;
-            el.style.animationDuration = `${duration}s`;
-            
-            // Custom properties for keyframes
-            el.style.setProperty('--max-opacity', opacity);
-            el.style.setProperty('--drift', drift);
-
-            floatingContainer.appendChild(el);
-        }
-    </script>
 </body>
 </html>
