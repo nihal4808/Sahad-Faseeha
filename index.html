@@ -337,6 +337,7 @@
         }
 
         /* Splash Overlay Styles */
+        /* Splash Overlay Styles */
         #splash-overlay {
             position: fixed;
             inset: 0;
@@ -345,42 +346,51 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: transparent;
+            background: linear-gradient(135deg, #FFFDF9 0%, #ffeef2 100%);
             overflow: hidden;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .splash-bg {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, #FFFDF9 0%, #ffeef2 100%);
-            z-index: -1;
-            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .splash-bg::after {
-            content: '';
             position: absolute;
             inset: 0;
             background: radial-gradient(circle at 30% 30%, rgba(255,224,230,0.4), transparent 45%),
                         radial-gradient(circle at 70% 70%, rgba(255,224,230,0.3), transparent 45%);
             animation: bgFloat 20s ease-in-out infinite;
+            z-index: -1;
         }
         @keyframes bgFloat {
             0% { background-position: 0% 0%; }
             50% { background-position: 10% 10%; }
             100% { background-position: 0% 0%; }
         }
+        .logo-btn-wrapper {
+            animation: floatLogo 4s ease-in-out infinite;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
         #splash-logo {
             width: 150px;
             height: auto;
-            animation: floatLogo 4s ease-in-out infinite;
             filter: drop-shadow(0 0 15px rgba(255,215,0,0.5));
-            z-index: 10;
+            cursor: pointer;
+            transition: filter 0.3s ease, transform 0.2s ease;
+        }
+        #splash-logo:hover {
+            filter: drop-shadow(0 0 25px rgba(255,215,0,0.85));
+            transform: scale(1.06);
+        }
+        #splash-logo:active {
+            transform: scale(0.94);
         }
         @keyframes floatLogo {
             0%,100% { transform: translateY(0) scale(1); }
             50% { transform: translateY(-15px) scale(1.03); }
         }
         #tap-text {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             font-family: var(--font-heading);
             font-size: 1.4rem;
             color: var(--foreground);
@@ -394,17 +404,21 @@
             to { opacity:1; transform: translateY(0); }
         }
         #hand-icon {
-            margin-top: 0.5rem;
-            width: 30px;
-            height: 30px;
-            background: url('assets/tap.png') no-repeat center / contain;
+            margin-top: 0.75rem;
+            width: 24px;
+            height: 24px;
+            color: var(--foreground);
             animation: handTap 2s infinite ease-in-out;
             z-index: 10;
             transition: opacity 0.5s ease, transform 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
         }
         @keyframes handTap {
-            0%,100% { transform: translateY(0); }
-            50% { transform: translateY(5px); }
+            0%,100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(0.9) translateY(4px); }
         }
         .ripple {
             position: absolute;
@@ -422,76 +436,17 @@
         
         /* Dismissed state */
         #splash-overlay.dismissed {
+            opacity: 0;
             pointer-events: none;
         }
-        #splash-overlay.dismissed .splash-bg {
+        #splash-overlay.dismissed .logo-btn-wrapper {
+            transform: scale(1.3);
             opacity: 0;
         }
         #splash-overlay.dismissed #tap-text,
         #splash-overlay.dismissed #hand-icon {
             opacity: 0;
             transform: translateY(20px);
-        }
-
-        /* Cover Overlay Styles */
-        #cover-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 1500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #cover-overlay.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .cover-wrapper {
-            position: relative;
-            height: 80vh;
-            max-height: 800px;
-            aspect-ratio: 1023 / 1537;
-            background: #fff;
-            border-radius: 1.5rem;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transform: scale(1.08);
-            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        #cover-overlay.reveal-inv .cover-wrapper {
-            transform: scale(1);
-        }
-        #cover-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        #logo-target {
-            position: absolute;
-            left: 50%;
-            top: 24.5%;
-            transform: translate(-50%, -50%);
-            width: 14.5%;
-            aspect-ratio: 1;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* Responsive Cover Card */
-        @media (max-width: 600px) {
-            .cover-wrapper {
-                width: 90vw;
-                height: auto;
-                aspect-ratio: 1023 / 1537;
-                border-radius: 1rem;
-            }
         }
 
         body.no-scroll {
@@ -505,17 +460,11 @@
     <!-- Splash Entrance Overlay -->
     <div id="splash-overlay">
         <div class="splash-bg"></div>
-        <img src="assets/tap.png" id="splash-logo" alt="Logo" />
-        <div id="tap-text">Tap to Enter</div>
-        <div id="hand-icon"></div>
-    </div>
-
-    <!-- Invitation Cover Image Overlay -->
-    <div id="cover-overlay">
-        <div class="cover-wrapper">
-            <img src="assets/front.PNG" id="cover-img" alt="Cover" />
-            <div id="logo-target"></div>
+        <div class="logo-btn-wrapper">
+            <img src="assets/tap.png" id="splash-logo" alt="Logo" />
         </div>
+        <div id="tap-text">Tap to Enter</div>
+        <div id="hand-icon"><i data-lucide="hand"></i></div>
     </div>
 
     <!-- Animated Background Blobs -->
@@ -801,8 +750,6 @@
     // ── Entrance Splash Animation ─────────────────────────────────────
     const splashOverlay = document.getElementById('splash-overlay');
     const splashLogo = document.getElementById('splash-logo');
-    const coverOverlay = document.getElementById('cover-overlay');
-    const logoTarget = document.getElementById('logo-target');
 
     function createRipple() {
         const ripple = document.createElement('div');
@@ -822,57 +769,28 @@
         startMusic();
         
         // 2. Stop floating animation to enable transform transition
-        splashLogo.style.animation = 'none';
+        const logoWrapper = document.querySelector('.logo-btn-wrapper');
+        if (logoWrapper) {
+            logoWrapper.style.animation = 'none';
+        }
         
         // 3. User feedback: scale logo down slightly
         splashLogo.style.transition = 'transform 0.2s ease-out';
         splashLogo.style.transform = 'scale(0.9)';
         createRipple();
 
-        // 4. Start flight and transition to cover card
+        // 4. Start direct fade-out transition
         setTimeout(() => {
-            // Get current and target bounding boxes
-            const startRect = splashLogo.getBoundingClientRect();
-            const targetRect = logoTarget.getBoundingClientRect();
-            
-            const currentWidth = startRect.width || 150;
-            const targetWidth = targetRect.width || 80;
-            
-            const dx = targetRect.left - startRect.left;
-            const dy = targetRect.top - startRect.top;
-            const scale = targetWidth / currentWidth;
-            
-            // Apply translation and scale to fly the logo to the target on the cover card
-            splashLogo.style.transition = 'transform 1.2s cubic-bezier(0.25, 1, 0.5, 1)';
-            splashLogo.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-            
-            // Fade out the splash screen background and texts
+            // Fade out the splash screen and scale up the logo wrapper
             splashOverlay.classList.add('dismissed');
             
-            // Fade in the cover card overlay
-            coverOverlay.classList.add('visible');
-            coverOverlay.classList.add('reveal-inv');
+            // Enable scroll
+            document.body.classList.remove('no-scroll');
             
-            // 5. At the end of the flight (1.2s), dissolve the logo into the cover image
+            // 5. Fully clean up elements after fade out completes (800ms transition)
             setTimeout(() => {
-                splashLogo.style.transition = 'opacity 0.4s ease';
-                splashLogo.style.opacity = '0';
-                
-                // 6. Keep cover visible for a brief moment, then fade out cover to reveal main site
-                setTimeout(() => {
-                    coverOverlay.style.transition = 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)';
-                    coverOverlay.style.opacity = '0';
-                    
-                    // Enable scroll
-                    document.body.classList.remove('no-scroll');
-                    
-                    // Fully clean up elements after fade out
-                    setTimeout(() => {
-                        splashOverlay.style.display = 'none';
-                        coverOverlay.style.display = 'none';
-                    }, 1000);
-                }, 1500); // cover card visible duration
-            }, 1200); // logo flight duration
+                splashOverlay.style.display = 'none';
+            }, 800);
         }, 200);
     }
 
