@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sahad & Faseeha - Wedding Invitation</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Great+Vibes&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --color-ivory: #fffff0;
+            --color-cream: #fffdd0;
+            --color-warm-white: #fdfbf7;
+            --color-blush-pink: #ffd1dc;
+            --color-dusty-rose: #dcaebb;
+            --color-champagne: #f7e7ce;
+            --color-sage-green: #bcc6b5;
+            --color-light-olive: #a0a07b;
+            --color-pale-gold: #e6c27a;
+            
+            --foreground: #4a4a4a;
+            --background: #fdfbf7;
+            
+            --font-script: 'Great Vibes', cursive;
+            --font-heading: 'Cormorant Garamond', serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+
+        body {
+            font-family: var(--font-sans);
+            color: var(--foreground);
+            background-color: var(--background);
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.03"/></svg>'), linear-gradient(135deg, rgba(253, 251, 247, 1) 0%, rgba(255, 209, 220, 0.15) 50%, rgba(188, 198, 181, 0.15) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Blobs */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -2;
+            opacity: 0.6;
+            animation: floatBlob 20s ease-in-out infinite alternate;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--color-blush-pink); }
+        .blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: var(--color-champagne); animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 60%; width: 40vw; height: 40vw; background: var(--color-sage-green); animation-delay: -10s; }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5%, 10%) scale(1.1); }
+            100% { transform: translate(-5%, -5%) scale(0.9); }
+        }
+
+        /* Utility Classes */
+        .glass {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .text-center { text-align: center; }
+        .font-script { font-family: var(--font-script); }
+        .font-heading { font-family: var(--font-heading); }
+        .uppercase { text-transform: uppercase; }
+        .tracking-widest { letter-spacing: 0.1em; }
+        .italic { font-style: italic; }
+
+        /* Floating Elements Container */
+        #floating-elements {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; overflow: hidden;
+        }
+
+        .float-item {
+            position: absolute;
+            animation: floatItem linear infinite;
+            will-change: transform;
+        }
+        .float-sway { animation: floatItemSway linear infinite; }
+        .float-spin { animation: floatItemSpin linear infinite; }
+
+        @keyframes floatItem {
+            0% { transform: translateY(-10vh) translateX(0); opacity: 0; }
+            10% { opacity: var(--max-opacity); }
+            90% { opacity: var(--max-opacity); }
+            100% { transform: translateY(110vh) translateX(var(--drift)); opacity: 0; }
+        }
+        @keyframes floatItemSway {
+            0% { transform: translateY(-10vh) translateX(0) rotate(-15deg); opacity: 0; }
+            10% { opacity: var(--max-opacity); }
+            50% { transform: translateY(50vh) translateX(var(--drift)) rotate(15deg); }
+            90% { opacity: var(--max-opacity); }
+            100% { transform: translateY(110vh) translateX(0) rotate(-15deg); opacity: 0; }
+        }
+        @keyframes floatItemSpin {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            10% { opacity: var(--max-opacity); }
+            90% { opacity: var(--max-opacity); }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        section { position: relative; z-index: 10; padding: 6rem 1.5rem; }
+
+        /* HERO SECTION */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-rays {
+            position: absolute;
+            inset: -50%;
+            background: conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 10%, rgba(255,255,255,0) 20%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0) 40%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.4) 70%, rgba(255,255,255,0) 80%, rgba(255,255,255,0.4) 90%, rgba(255,255,255,0) 100%);
+            animation: rotateRays 60s linear infinite;
+            opacity: 0.3;
+            z-index: -1;
+        }
+        @keyframes rotateRays { to { transform: rotate(360deg); } }
+
+        .hero-floral-bg {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23ffd1dc" opacity="0.3" d="M20,10 Q30,0 40,10 T60,10 T80,30 T70,50 T80,70 T60,90 T40,80 T20,90 T0,70 T10,50 T0,30 Z"/></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23bcc6b5" opacity="0.2" d="M10,20 Q0,40 20,60 T60,80 T90,60 T70,30 Z"/></svg>');
+            background-size: 80vw, 90vw;
+            background-position: top -20vw left -20vw, bottom -30vw right -20vw;
+            background-repeat: no-repeat;
+            z-index: -1;
+            animation: slowBreathe 10s ease-in-out infinite alternate;
+        }
+
+        .hero-card {
+            border-radius: 2.5rem;
+            padding: 4rem 2rem;
+            width: 100%;
+            max-width: 750px;
+            position: relative;
+            background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.9);
+            box-shadow: 0 20px 50px rgba(220, 174, 187, 0.15), inset 0 0 0 2px rgba(255,255,255,0.5);
+            animation: heroReveal 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+        }
+
+        .hero-card-frame {
+            position: absolute;
+            inset: 1rem;
+            border: 1px solid rgba(220, 174, 187, 0.4); /* dusty rose */
+            border-radius: 1.5rem;
+            pointer-events: none;
+        }
+        .hero-card-frame::before, .hero-card-frame::after {
+            content: ''; position: absolute; width: 40px; height: 40px; border: 1px solid var(--color-dusty-rose); opacity: 0.5;
+        }
+        .hero-card-frame::before { top: -4px; left: -4px; border-right: none; border-bottom: none; border-radius: 1.5rem 0 0 0; }
+        .hero-card-frame::after { bottom: -4px; right: -4px; border-left: none; border-top: none; border-radius: 0 0 1.5rem 0; }
+
+        @keyframes heroReveal {
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .hero-text-seq { opacity: 0; animation: fadeUpSeq 1s forwards; }
+        .seq-1 { animation-delay: 0.5s; }
+        .seq-2 { animation-delay: 0.8s; }
+        .seq-3 { animation-delay: 1.2s; }
+        .seq-4 { animation-delay: 1.6s; }
+        .seq-5 { animation-delay: 2.0s; }
+
+        @keyframes fadeUpSeq {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .couple-names { margin: 2.5rem 0; display: flex; flex-direction: column; gap: 0.5rem; }
+        .couple-names h1 { font-size: 4.5rem; line-height: 1.1; color: var(--foreground); font-weight: normal; text-shadow: 0 4px 12px rgba(255,255,255,0.8); }
+        .couple-names .ampersand { font-size: 3.5rem; color: var(--color-sage-green); animation: slowPulse 4s infinite alternate; }
+
+        @media (min-width: 768px) {
+            .couple-names h1 { font-size: 7rem; }
+            .couple-names .ampersand { font-size: 5rem; }
+            .hero-card { padding: 5rem; }
+        }
+
+        .scroll-down {
+            position: absolute; bottom: 2rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+            color: #888; text-decoration: none; transition: color 0.3s; opacity: 0; animation: fadeIn 1s 3s forwards;
+        }
+        .scroll-down:hover { color: var(--foreground); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
+        .scroll-down i { animation: bounce 2s infinite ease-in-out; }
+
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes slowBreathe { to { transform: scale(1.05); } }
+        @keyframes slowPulse { to { transform: scale(1.1); opacity: 0.7; } }
+
+        /* Fade Up Animation Class */
+        .fade-up { opacity: 0; transform: translateY(40px); transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+        /* Animated Divider */
+        .svg-divider {
+            width: 100%; height: 30px; display: flex; justify-content: center; align-items: center; margin: 3rem 0; opacity: 0;
+            transition: opacity 1.5s ease-out, transform 1.5s ease-out; transform: scaleX(0.8);
+        }
+        .svg-divider.visible { opacity: 1; transform: scaleX(1); }
+
+        /* Invitation Section */
+        .invitation { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; gap: 3rem; }
+        .bismillah { font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 300; }
+        .parents-text { font-size: 1.15rem; color: #4a4a4a; line-height: 1.7; }
+        .parents-text .small { font-size: 0.95rem; color: #888; }
+        .groom-name, .bride-name { font-size: 3.5rem; margin: 1rem 0; font-weight: normal; }
+        
+        .weds-row { display: flex; align-items: center; gap: 1.5rem; width: 100%; max-width: 400px; margin: 1.5rem 0; }
+        .divider-h { flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(188, 198, 181, 0.8), transparent); }
+
+        @media (min-width: 768px) { .groom-name, .bride-name { font-size: 5rem; } }
+
+        /* Events Section */
+        .events-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; max-width: 1000px; margin: 3rem auto 0; }
+        @media (min-width: 768px) { .events-grid { grid-template-columns: 1fr 1fr; } }
+
+        .event-card {
+            border-radius: 2.5rem; padding: 3rem 2rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+            position: relative; overflow: hidden; transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s;
+        }
+        .event-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+        .event-icon-wrapper {
+            width: 4.5rem; height: 4.5rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;
+            animation: iconFloat 4s ease-in-out infinite alternate;
+        }
+        @keyframes iconFloat { to { transform: translateY(-8px); } }
+        
+        .bg-pink-soft { background-color: rgba(255, 209, 220, 0.2); color: var(--color-dusty-rose); border: 1px solid rgba(255,209,220,0.5); }
+        .bg-green-soft { background-color: rgba(188, 198, 181, 0.2); color: var(--color-light-olive); border: 1px solid rgba(188,198,181,0.5); }
+
+        .btn-group { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; justify-content: center; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 999px;
+            text-decoration: none; font-size: 0.9rem; transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); border: none; cursor: pointer;
+        }
+        .btn-outline { background-color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(74, 74, 74, 0.1); color: var(--foreground); }
+        .btn-outline:hover { background-color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .btn-solid {
+            background: linear-gradient(135deg, var(--color-sage-green), #aeb9a7); color: white;
+            box-shadow: 0 4px 14px 0 rgba(188, 198, 181, 0.4);
+        }
+        .btn-solid:hover { transform: translateY(-2px); box-shadow: 0 8px 20px 0 rgba(188, 198, 181, 0.6); }
+
+        /* Countdown */
+        .countdown-container { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+        @media (min-width: 768px) { .countdown-container { gap: 2rem; } }
+        .countdown-item { display: flex; flex-direction: column; align-items: center; }
+        .countdown-box {
+            width: 4.5rem; height: 4.5rem; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 1.5rem; display: flex; align-items: center; justify-content: center;
+            font-size: 1.75rem; color: var(--foreground); box-shadow: 0 8px 20px rgba(0,0,0,0.04); margin-bottom: 0.5rem;
+            transition: transform 0.3s;
+        }
+        .countdown-box:hover { transform: scale(1.05); }
+        @media (min-width: 768px) { .countdown-box { width: 5.5rem; height: 5.5rem; font-size: 2.25rem; } }
+
+        /* Gallery */
+        .gallery-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 3rem auto 0; grid-auto-flow: dense;
+        }
+        .gallery-item {
+            border-radius: 2rem; background-color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255,255,255,0.7);
+            display: flex; align-items: center; justify-content: center; color: rgba(74, 74, 74, 0.3); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        .gallery-item:hover { transform: scale(1.03) translateY(-5px); color: rgba(74, 74, 74, 0.6); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+
+        /* Footer */
+        footer { padding: 6rem 1.5rem; text-align: center; position: relative; }
+        .footer-bg { position: absolute; inset: 0; background: linear-gradient(to top, rgba(247, 231, 206, 0.4), transparent); z-index: -1; }
+
+        /* Music Player */
+        .music-wrap {
+            position: fixed; bottom: 2rem; right: 2rem; z-index: 50;
+            display: flex; align-items: center; gap: 0.75rem;
+            animation: fadeIn 1s 3s both;
+        }
+        .music-label {
+            font-family: var(--font-sans); font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 0.12em; color: #888; background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(10px); padding: 0.3rem 0.8rem; border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            pointer-events: none; white-space: nowrap;
+            transition: opacity 0.4s;
+        }
+        .music-btn {
+            width: 4rem; height: 4rem; border-radius: 50%; border: 1px solid rgba(255,255,255,0.9);
+            cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--foreground);
+            transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.75); backdrop-filter: blur(10px); position: relative;
+        }
+        .music-btn:hover { transform: scale(1.12); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .music-btn.muted { background: rgba(255,255,255,0.5); }
+        .ping {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%; background-color: rgba(255, 209, 220, 0.55);
+            animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; z-index: -1; display: none;
+        }
+        .music-btn.playing .ping { display: block; }
+        @keyframes ping { 75%, 100% { transform: scale(1.7); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <!-- Animated Background Blobs -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <!-- Floating Background Elements -->
+    <div id="floating-elements"></div>
+
+    <!-- Music Player -->
+    <div class="music-wrap">
+        <span class="music-label" id="music-label">Tap to play</span>
+        <button class="music-btn muted" id="music-toggle" aria-label="Mute / Unmute Music">
+            <i data-lucide="volume-x" id="music-icon"></i>
+            <div class="ping"></div>
+        </button>
+    </div>
+    <audio id="bg-music" loop>
+        <source src="assets/Audio.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-rays"></div>
+        <div class="hero-floral-bg"></div>
+        <div class="hero-card text-center parallax" data-speed="0.05">
+            <div class="hero-card-frame"></div>
+            
+            <p class="font-heading uppercase tracking-widest text-sm hero-text-seq seq-1" style="color: #666; margin-bottom: 1.5rem;">
+                Together with our families
+            </p>
+            <p class="font-heading text-lg hero-text-seq seq-2" style="margin-bottom: 2rem;">
+                Joyfully invite you to the wedding of
+            </p>
+
+            <div class="couple-names hero-text-seq seq-3">
+                <h1 class="font-script">Muhammed Sahad</h1>
+                <span class="font-script ampersand">&</span>
+                <h1 class="font-script">Faseeha</h1>
+            </div>
+
+            <div class="hero-date hero-text-seq seq-4">
+                <p class="font-heading text-xl">Monday, 3rd August 2026</p>
+                <p class="font-sans hijri uppercase tracking-widest">(19 Safar 1448 AH)</p>
+            </div>
+        </div>
+
+        <a href="#invitation" class="scroll-down">
+            <span class="font-sans uppercase tracking-widest text-xs">Open Invitation</span>
+            <i data-lucide="chevron-down"></i>
+        </a>
+    </section>
+
+    <!-- Divider -->
+    <div class="svg-divider fade-up">
+        <svg width="200" height="20" viewBox="0 0 200 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10 Q 50 20, 100 10 T 200 10" stroke="#bcc6b5" stroke-width="1.5" fill="none"/>
+            <circle cx="100" cy="10" r="4" fill="#ffd1dc"/>
+        </svg>
+    </div>
+
+    <!-- Invitation Section -->
+    <section id="invitation" class="container">
+        <div class="invitation text-center">
+            
+            <div class="fade-up" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <span class="bismillah">﷽</span>
+                <p class="font-heading italic" style="color: #666; letter-spacing: 0.05em;">
+                    In the Name of Allah, the Most Gracious, the Most Merciful
+                </p>
+            </div>
+
+            <div class="fade-up" style="width: 1px; height: 5rem; background: linear-gradient(to bottom, transparent, var(--color-champagne), transparent);"></div>
+
+            <!-- Groom -->
+            <div class="fade-up" style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem; width: 100%;">
+                <div class="parents-text font-heading">
+                    <p style="font-size: 1.35rem;">Mr. Mohammed Ali & Mrs. Aysha Mohammed Ali</p>
+                    <p class="italic" style="color: #888; margin: 0.5rem 0;">along with the esteemed</p>
+                    <p style="font-size: 1.35rem;">Attupurath & Manalath families</p>
+                </div>
+                
+                <p class="font-sans uppercase tracking-widest" style="font-size: 0.85rem; color: #666; max-width: 500px; line-height: 1.8; margin-top: 1rem;">
+                    Warmly invite you and your family to grace the joyous occasion of the wedding of our beloved son,
+                </p>
+
+                <h2 class="groom-name font-script">Muhammed Sahad Attupurath</h2>
+
+                <p class="font-heading parents-text">
+                    <span class="small">Grandson of Late. Moideen Kutty Haji & Ayisha Hajjumma<br>and Late. Hassan & Late. Amina Hajjumma</span>
+                </p>
+            </div>
+
+            <div class="weds-row fade-up">
+                <div class="divider-h"></div>
+                <span class="font-script" style="font-size: 2.5rem; color: var(--color-sage-green); animation: slowPulse 3s infinite alternate;">weds</span>
+                <div class="divider-h"></div>
+            </div>
+
+            <!-- Bride -->
+            <div class="fade-up" style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem; width: 100%;">
+                <h2 class="bride-name font-script">Faseeha</h2>
+
+                <div class="parents-text font-heading" style="margin-top: 1rem;">
+                    <p class="italic" style="color: #888; margin-bottom: 0.5rem;">Loving Daughter of</p>
+                    <p style="font-size: 1.35rem;">Mr. Sulaiman T & Mrs. Fathima C V</p>
+                    <p style="color: #666; margin-top: 0.5rem;">Thondiyil House, Kodakkattu Kunnu, Kalachal</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="svg-divider fade-up">
+        <svg width="200" height="20" viewBox="0 0 200 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10 Q 50 0, 100 10 T 200 10" stroke="#bcc6b5" stroke-width="1.5" fill="none"/>
+            <circle cx="100" cy="10" r="4" fill="#ffd1dc"/>
+        </svg>
+    </div>
+
+    <!-- Events Section -->
+    <section id="events" class="container">
+        <div class="text-center fade-up" style="margin-bottom: 3rem;">
+            <span class="font-sans" style="font-size: 1.5rem; font-weight: 300; display: block; margin-bottom: 1rem; color: #666;">إن شاء الله</span>
+            <h2 class="font-script" style="font-size: 4.5rem; color: var(--foreground);">Wedding Details</h2>
+        </div>
+
+        <div class="events-grid">
+            <!-- Date & Time -->
+            <div class="event-card glass fade-up parallax" data-speed="0.02">
+                <div class="event-icon-wrapper bg-pink-soft">
+                    <i data-lucide="calendar-heart" style="width: 2rem; height: 2rem;"></i>
+                </div>
+                <h3 class="font-heading" style="font-size: 1.85rem;">The Wedding Day</h3>
+                <div style="line-height: 1.8; text-align: center;">
+                    <p class="font-heading" style="font-size: 1.3rem;">On Monday</p>
+                    <p class="font-sans" style="font-size: 1.35rem; font-weight: 500;">3rd August 2026</p>
+                    <p class="font-heading" style="color: #888; font-size: 1.1rem;">(19 Safar 1448 AH)</p>
+                </div>
+                <div style="width: 4rem; height: 1px; background: rgba(188, 198, 181, 0.5); margin: 1rem 0;"></div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; color: #666;">
+                    <i data-lucide="clock" style="color: var(--color-sage-green); width: 1.25rem; height: 1.25rem;"></i>
+                    <span class="font-heading" style="font-size: 1.3rem;">Lunch by 12.30pm to 2.30pm</span>
+                </div>
+            </div>
+
+            <!-- Venue -->
+            <div class="event-card glass fade-up parallax" data-speed="0.03">
+                <div class="event-icon-wrapper bg-green-soft">
+                    <i data-lucide="map-pin" style="width: 2rem; height: 2rem;"></i>
+                </div>
+                <h3 class="font-heading" style="font-size: 1.85rem;">The Venue</h3>
+                <div style="line-height: 1.8; text-align: center;">
+                    <p class="font-heading" style="font-size: 1.6rem;">Viva Palace</p>
+                    <p class="font-sans" style="color: #666; font-size: 1.1rem;">Naduvattam</p>
+                </div>
+                <div style="width: 4rem; height: 1px; background: rgba(255, 209, 220, 0.8); margin: 1.5rem 0;"></div>
+                <div class="btn-group">
+                    <a href="https://maps.google.com/?q=Viva+Palace,+Naduvattam" target="_blank" class="btn btn-outline font-sans">
+                        <i data-lucide="map-pin" style="width: 1rem; height: 1rem;"></i> View Map
+                    </a>
+                    <a href="https://maps.google.com/?daddr=Viva+Palace,+Naduvattam" target="_blank" class="btn btn-solid font-sans">
+                        <i data-lucide="navigation" style="width: 1rem; height: 1rem;"></i> Navigate
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="fade-up" style="margin-top: 5rem; text-align: center;">
+            <h3 class="font-heading italic" style="font-size: 1.75rem; color: #666;">Time until we say "I do"</h3>
+            <div class="countdown-container" id="countdown">
+                <div class="countdown-item">
+                    <div class="countdown-box font-heading" id="days">00</div>
+                    <span class="font-sans uppercase tracking-widest" style="font-size: 0.75rem; color: #888;">Days</span>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-box font-heading" id="hours">00</div>
+                    <span class="font-sans uppercase tracking-widest" style="font-size: 0.75rem; color: #888;">Hours</span>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-box font-heading" id="minutes">00</div>
+                    <span class="font-sans uppercase tracking-widest" style="font-size: 0.75rem; color: #888;">Mins</span>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-box font-heading" id="seconds">00</div>
+                    <span class="font-sans uppercase tracking-widest" style="font-size: 0.75rem; color: #888;">Secs</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="svg-divider fade-up">
+        <svg width="200" height="20" viewBox="0 0 200 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 10 Q 50 20, 100 10 T 200 10" stroke="#bcc6b5" stroke-width="1.5" fill="none"/>
+            <circle cx="100" cy="10" r="4" fill="#ffd1dc"/>
+        </svg>
+    </div>
+
+    <!-- Gallery Placeholder -->
+    <section id="gallery" class="container" style="margin-bottom: 4rem;">
+        <div class="text-center fade-up" style="margin-bottom: 3rem;">
+            <h2 class="font-script" style="font-size: 4.5rem;">Our Moments</h2>
+            <p class="font-heading italic" style="font-size: 1.35rem; color: #888;">A glimpse into our beautiful journey</p>
+        </div>
+        
+        <div class="gallery-grid fade-up">
+            <div class="gallery-item glass" style="height: 250px; grid-row: span 1;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
+            <div class="gallery-item glass" style="height: 400px; grid-row: span 2;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
+            <div class="gallery-item glass" style="height: 300px; grid-row: span 1;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
+            <div class="gallery-item glass" style="height: 350px; grid-row: span 2;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
+            <div class="gallery-item glass" style="height: 250px; grid-row: span 1;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
+            <div class="gallery-item glass" style="height: 350px; grid-row: span 2;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-bg"></div>
+        <div class="fade-up container" style="max-width: 700px;">
+            <p class="font-heading italic" style="font-size: 1.4rem; color: #4a4a4a; line-height: 1.8;">
+                "With your love, blessings, and presence, this special day will become a beautiful and cherished memory for Sahad and Faseeha forever..."
+            </p>
+            <div style="width: 5rem; height: 1px; background: rgba(74, 74, 74, 0.2); margin: 3rem auto;"></div>
+            <h2 class="font-script" style="font-size: 4rem; margin-bottom: 0.5rem; color: var(--color-sage-green);">S & F</h2>
+            <p class="font-sans uppercase tracking-widest" style="font-size: 0.85rem; color: #888;">August 3, 2026</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // ── Music Player Logic ──────────────────────────────────────────
+        const musicBtn  = document.getElementById('music-toggle');
+        const audio     = document.getElementById('bg-music');
+        const musicIcon = document.getElementById('music-icon');
+        const musicLabel = document.getElementById('music-label');
+        audio.volume = 0.5;
+        let hasStarted = false;
+        let isMuted = false;
+
+        function setPlayingState() {
+            // Audio is now running, unmuted by default
+            musicBtn.classList.add('playing');
+            musicBtn.classList.remove('muted');
+            musicIcon.setAttribute('data-lucide', 'volume-2');
+            musicLabel.textContent = 'Mute';
+            lucide.createIcons();
+        }
+
+        function startMusic() {
+            if (!hasStarted) {
+                audio.play().then(() => {
+                    hasStarted = true;
+                    isMuted = false;
+                    setPlayingState();
+                }).catch(() => {});
+            }
+        }
+
+        // Autoplay on first user interaction (browser policy)
+        ['click', 'scroll', 'touchstart', 'keydown'].forEach(evt => {
+            document.addEventListener(evt, startMusic, { once: true });
+        });
+
+        // Mute / Unmute toggle
+        musicBtn.addEventListener('click', () => {
+            if (!hasStarted) { startMusic(); return; }
+            isMuted = !isMuted;
+            audio.muted = isMuted;
+            if (isMuted) {
+                musicBtn.classList.remove('playing');
+                musicBtn.classList.add('muted');
+                musicIcon.setAttribute('data-lucide', 'volume-x');
+                musicLabel.textContent = 'Unmute';
+            } else {
+                musicBtn.classList.add('playing');
+                musicBtn.classList.remove('muted');
+                musicIcon.setAttribute('data-lucide', 'volume-2');
+                musicLabel.textContent = 'Mute';
+            }
+            lucide.createIcons();
+        });
+
+        // Countdown Logic
+        const targetDate = new Date("2026-08-03T12:30:00+05:30").getTime();
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance > 0) {
+                document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+                document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+            }
+        }
+        
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Scroll Animations (Intersection Observer)
+        const fadeElements = document.querySelectorAll('.fade-up, .svg-divider');
+        
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -50px 0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        fadeElements.forEach(el => observer.observe(el));
+
+        // Parallax Effect
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            document.querySelectorAll('.parallax').forEach(el => {
+                const speed = el.getAttribute('data-speed') || 0.05;
+                el.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Advanced Floating Background Particles
+        const floatingContainer = document.getElementById('floating-elements');
+        
+        // Shapes for variety (circles/petals, stars, diamonds)
+        const shapes = [
+            '50%', // circle
+            '50%', // circle
+            '0 50% 50% 50%', // petal shape
+            '10% 90% 10% 90%', // leaf shape
+        ];
+        
+        const colors = [
+            'var(--color-blush-pink)',
+            'var(--color-champagne)',
+            'var(--color-ivory)',
+            'rgba(255,255,255,0.8)'
+        ];
+
+        const animations = ['float-item', 'float-sway', 'float-spin'];
+
+        for (let i = 0; i < 40; i++) {
+            const el = document.createElement('div');
+            
+            const animClass = animations[Math.floor(Math.random() * animations.length)];
+            el.className = `float-item ${animClass}`;
+            
+            const size = 3 + Math.random() * 12;
+            const left = Math.random() * 100;
+            const delay = Math.random() * 15;
+            const duration = 15 + Math.random() * 25;
+            const opacity = 0.2 + Math.random() * 0.5;
+            const drift = (Math.random() * 40 - 20) + 'vw';
+            
+            el.style.width = `${size}px`;
+            el.style.height = `${size}px`;
+            el.style.left = `${left}vw`;
+            el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            el.style.borderRadius = shapes[Math.floor(Math.random() * shapes.length)];
+            el.style.filter = size > 8 ? 'blur(2px)' : 'blur(0.5px)';
+            
+            el.style.animationDelay = `${delay}s`;
+            el.style.animationDuration = `${duration}s`;
+            
+            // Custom properties for keyframes
+            el.style.setProperty('--max-opacity', opacity);
+            el.style.setProperty('--drift', drift);
+
+            floatingContainer.appendChild(el);
+        }
+    </script>
+</body>
+</html>
