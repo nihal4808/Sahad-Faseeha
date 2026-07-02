@@ -287,16 +287,7 @@
         .countdown-box:hover { transform: scale(1.05); }
         @media (min-width: 768px) { .countdown-box { width: 5.5rem; height: 5.5rem; font-size: 2.25rem; } }
 
-        /* Gallery */
-        .gallery-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 3rem auto 0; grid-auto-flow: dense;
-        }
-        .gallery-item {
-            border-radius: 2rem; background-color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255,255,255,0.7);
-            display: flex; align-items: center; justify-content: center; color: rgba(74, 74, 74, 0.3); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-            position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        }
-        .gallery-item:hover { transform: scale(1.03) translateY(-5px); color: rgba(74, 74, 74, 0.6); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+
 
         /* Footer */
         footer { padding: 6rem 1.5rem; text-align: center; position: relative; }
@@ -331,6 +322,20 @@
         .music-btn.playing .ping { display: block; }
         @keyframes ping { 75%, 100% { transform: scale(1.7); opacity: 0; } }
 
+        /* Mobile responsive adjustments */
+        @media (max-width: 600px) {
+            .hero { padding: 1rem; }
+            .hero-card { padding: 2rem 1rem; }
+            .hero-card h1, .hero-card p, .couple-names h1 { font-size: 2.5rem; }
+            .couple-names h1 { font-size: 3rem; }
+            .font-script { font-size: 1.5rem; }
+            .music-wrap { bottom: 1rem; right: 1rem; }
+            .music-btn { width: 3rem; height: 3rem; }
+            .music-label { font-size: 0.6rem; }
+            .events-grid { grid-template-columns: 1fr; }
+            .event-card { padding: 2rem 1rem; }
+        }
+
     </style>
 </head>
 <body>
@@ -351,7 +356,7 @@
             <div class="ping"></div>
         </button>
     </div>
-    <audio id="bg-music" loop>
+    <audio id="bg-music" loop autoplay muted preload="auto">
         <source src="assets/Audio.mp3" type="audio/mpeg">
     </audio>
 
@@ -534,22 +539,7 @@
         </svg>
     </div>
 
-    <!-- Gallery Placeholder -->
-    <section id="gallery" class="container" style="margin-bottom: 4rem;">
-        <div class="text-center fade-up" style="margin-bottom: 3rem;">
-            <h2 class="font-script" style="font-size: 4.5rem;">Our Moments</h2>
-            <p class="font-heading italic" style="font-size: 1.35rem; color: #888;">A glimpse into our beautiful journey</p>
-        </div>
-        
-        <div class="gallery-grid fade-up">
-            <div class="gallery-item glass" style="height: 250px; grid-row: span 1;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
-            <div class="gallery-item glass" style="height: 400px; grid-row: span 2;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
-            <div class="gallery-item glass" style="height: 300px; grid-row: span 1;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
-            <div class="gallery-item glass" style="height: 350px; grid-row: span 2;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
-            <div class="gallery-item glass" style="height: 250px; grid-row: span 1;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
-            <div class="gallery-item glass" style="height: 350px; grid-row: span 2;"><i data-lucide="image" style="width: 2rem; height: 2rem;"></i></div>
-        </div>
-    </section>
+
 
     <!-- Footer -->
     <footer>
@@ -575,15 +565,15 @@
         const musicIcon = document.getElementById('music-icon');
         const musicLabel = document.getElementById('music-label');
         audio.volume = 0.5;
+        audio.muted = true; // start muted to satisfy autoplay policy
         let hasStarted = false;
-        let isMuted = false;
+        let isMuted = true; // reflects current muted state
 
         function setPlayingState() {
-            // Audio is now running, unmuted by default
             musicBtn.classList.add('playing');
             musicBtn.classList.remove('muted');
             musicIcon.setAttribute('data-lucide', 'volume-2');
-            musicLabel.textContent = 'Mute';
+            musicLabel.textContent = isMuted ? 'Unmute' : 'Mute';
             lucide.createIcons();
         }
 
@@ -591,15 +581,24 @@
             if (!hasStarted) {
                 audio.play().then(() => {
                     hasStarted = true;
-                    isMuted = false;
-                    setPlayingState();
+                    // After a short delay, unmute automatically
+                    setTimeout(() => {
+                        audio.muted = false;
+                        isMuted = false;
+                        setPlayingState();
+                    }, 2000);
                 }).catch(() => {});
             }
         }
 
-        // Autoplay on first user interaction (browser policy)
-        ['click', 'scroll', 'touchstart', 'keydown'].forEach(evt => {
-            document.addEventListener(evt, startMusic, { once: true });
+        // Auto‑play on page load (muted) and unmute after a short delay
+        window.addEventListener('DOMContentLoaded', () => {
+            // Audio will start playing automatically because it's muted
+            setTimeout(() => {
+                audio.muted = false;
+                isMuted = false;
+                setPlayingState();
+            }, 2000);
         });
 
         // Mute / Unmute toggle
