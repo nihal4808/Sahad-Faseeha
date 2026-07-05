@@ -8,7 +8,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Great+Vibes&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Pinyon+Script&family=Great+Vibes&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -28,7 +28,7 @@
             --foreground: #4a4a4a;
             --background: #fdfbf7;
             
-            --font-script: 'Edwardian Script ITC', 'Great Vibes', cursive;
+            --font-script: 'Pinyon Script', 'Edwardian Script ITC', 'Great Vibes', cursive;
             --font-heading: 'Cormorant Garamond', serif;
             --font-sans: 'Inter', sans-serif;
         }
@@ -365,6 +365,9 @@
             
             .countdown-box { width: 3.5rem; height: 3.5rem; font-size: 1.25rem; }
             .countdown-container { gap: 0.5rem; }
+            
+            .couple-img { width: 75vw !important; max-width: 280px !important; }
+            .couple-name-badge { transform: translateX(-50%) scale(0.8) !important; bottom: -15px !important; }
         }
 
         /* Splash Overlay Styles */
@@ -563,9 +566,9 @@
             <div style="position: absolute; inset: -15px; border: 1px solid var(--color-dusty-rose); border-radius: 300px 300px 25px 25px; opacity: 0.6; pointer-events: none; z-index: 1;"></div>
             <div style="position: absolute; inset: -6px; border: 1px solid var(--color-sage-green); border-radius: 300px 300px 20px 20px; opacity: 0.4; pointer-events: none; z-index: 1;"></div>
             
-            <img src="assets/couples.png" alt="Sahad & Faseeha" style="width: 100%; width: 85vw; max-width: 350px; aspect-ratio: 4/5; object-fit: cover; object-position: center; border-radius: 300px 300px 15px 15px; box-shadow: 0 30px 60px rgba(0,0,0,0.12); display: block; position: relative; z-index: 2;">
+            <img src="assets/couples.png" alt="Sahad & Faseeha" class="couple-img" style="width: 100%; max-width: 350px; aspect-ratio: 4/5; object-fit: cover; object-position: center; border-radius: 300px 300px 15px 15px; box-shadow: 0 30px 60px rgba(0,0,0,0.12); display: block; position: relative; z-index: 2;">
             
-            <div style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); z-index: 3; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 0.75rem 2rem; border-radius: 3rem; border: 1px solid rgba(220, 174, 187, 0.4); box-shadow: 0 15px 30px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 0.75rem; white-space: nowrap;">
+            <div class="couple-name-badge" style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); z-index: 3; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); padding: 0.75rem 2rem; border-radius: 3rem; border: 1px solid rgba(220, 174, 187, 0.4); box-shadow: 0 15px 30px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 0.75rem; white-space: nowrap; transform-origin: center bottom;">
                 <i data-lucide="flower-2" style="width: 1.2rem; height: 1.2rem; color: var(--color-sage-green);"></i>
                 <span class="font-script" style="color: var(--color-light-olive); font-size: 2rem; line-height: 1; transform: translateY(2px);">Sahad & Faseeha</span>
                 <i data-lucide="flower-2" style="width: 1.2rem; height: 1.2rem; color: var(--color-sage-green);"></i>
@@ -854,12 +857,6 @@
         if (!hasStarted) {
             audio.play().then(() => {
                 hasStarted = true;
-                // After a short delay, unmute automatically
-                setTimeout(() => {
-                    audio.muted = false;
-                    isMuted = false;
-                    setPlayingState();
-                }, 2000);
             }).catch(() => {});
         }
     }
@@ -904,8 +901,12 @@
         splashOverlay.removeEventListener('click', startEntrance);
         splashOverlay.removeEventListener('touchstart', startEntrance);
         
-        // 1. Force music start
-        startMusic();
+        // 1. Force music start and unmute
+        audio.muted = false;
+        isMuted = false;
+        audio.play().catch(()=>{});
+        setPlayingState();
+        hasStarted = true;
         
         // 2. Stop floating animation to enable transform transition
         const logoWrapper = document.querySelector('.logo-btn-wrapper');
