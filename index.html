@@ -1353,8 +1353,8 @@
             if (physicsActive) return; // Already released
             
             const boardRect = nameBoard.getBoundingClientRect();
-            // Trigger when the board is scrolled significantly up
-            if (boardRect.top < -100) {
+            // Trigger when the board reaches halfway up the screen
+            if (boardRect.top < window.innerHeight / 2) {
                 physicsActive = true;
                 
                 // Convert to fixed positioning so they fall relative to screen
