@@ -1286,6 +1286,7 @@
     function createPetal() {
         const petal = document.createElement('div');
         petal.classList.add('petal');
+        petal.isTrapped = false;
         
         petal.style.left = Math.random() * 100 + 'vw';
         
@@ -1302,7 +1303,7 @@
         document.body.appendChild(petal);
         
         setTimeout(() => {
-            if (petal.parentNode) {
+            if (!petal.isTrapped && petal.parentNode) {
                 petal.parentNode.removeChild(petal);
             }
         }, fallDuration * 1000);
@@ -1314,90 +1315,130 @@
     // ── Interactive Physics Petals on Board ──────────────────────────────
     const nameBoard = document.getElementById('name-board');
     if (nameBoard) {
-        const numTrappedPetals = 8;
         const trappedPetals = [];
         let physicsActive = false;
         let animationFrameId;
+        let catcherFrameId;
 
-        // Generate petals sitting on the top edge of the board
-        for (let i = 0; i < numTrappedPetals; i++) {
-            const p = document.createElement('div');
-            p.className = 'trapped-petal';
-            p.style.left = `${10 + Math.random() * 80}%`; // spread across top edge
-            
-            // Random sizes and initial rotations
-            const size = Math.random() * 10 + 12;
-            p.style.width = `${size}px`;
-            p.style.height = `${size}px`;
-            
-            const rotation = Math.random() * 360;
-            p.style.transform = `rotate(${rotation}deg)`;
-            
-            // Physics properties
-            p.physics = {
-                x: 0, 
-                y: 0,
-                vx: (Math.random() - 0.5) * 8, // Initial lateral push
-                vy: (Math.random() * -5) - 2,  // Initial upward pop
-                rotation: rotation,
-                vrot: (Math.random() - 0.5) * 15, // Spin velocity
-                gravity: 0.4 + Math.random() * 0.2
-            };
-            
-            nameBoard.appendChild(p);
-            trappedPetals.push(p);
-        }
-
-        // Release physics when scrolled past
-        window.addEventListener('scroll', () => {
-            if (physicsActive) return; // Already released
+        // Collision loop to catch falling petals
+        function catchPetals() {
+            if (physicsActive) return; // Stop catching if physics is active
             
             const boardRect = nameBoard.getBoundingClientRect();
-            // Trigger when the board reaches halfway up the screen
-            if (boardRect.top < window.innerHeight / 2) {
-                physicsActive = true;
+            
+            // Only catch if the board is below the halfway point
+            if (boardRect.top >= window.innerHeight / 2) {
+                const fallingPetals = document.querySelectorAll('.petal');
                 
-                // Convert to fixed positioning so they fall relative to screen
+                fallingPetals.forEach(petal => {
+                    if (petal.isTrapped) return;
+                    
+                    const petalRect = petal.getBoundingClientRect();
+                    
+                    // Simple AABB collision detection near the top edge of the board
+                    if (
+                        petalRect.bottom >= boardRect.top &&
+                        petalRect.top <= boardRect.top + 20 &&
+                        petalRect.right >= boardRect.left &&
+                        petalRect.left <= boardRect.right
+                    ) {
+                        // Caught!
+                        petal.isTrapped = true;
+                        
+                        // Stop animations
+                        petal.style.animation = 'none';
+                        petal.className = 'trapped-petal';
+                        
+                        // Position relative to board
+                        const relativeLeft = petalRect.left - boardRect.left;
+                        petal.style.left = `${relativeLeft}px`;
+                        petal.style.top = '-10px';
+                        
+                        // Keep current rotation
+                        const rotation = Math.random() * 360;
+                        petal.style.transform = `rotate(${rotation}deg)`;
+                        
+                        // Physics properties for when they fall later
+                        petal.physics = {
+                            x: 0, 
+                            y: 0,
+                            vx: (Math.random() - 0.5) * 8, // Initial lateral push
+                            vy: (Math.random() * -5) - 2,  // Initial upward pop
+                            rotation: rotation,
+                            vrot: (Math.random() - 0.5) * 15, // Spin velocity
+                            gravity: 0.4 + Math.random() * 0.2
+                        };
+                        
+                        nameBoard.appendChild(petal);
+                        trappedPetals.push(petal);
+                    }
+                });
+            } else if (trappedPetals.length > 0) {
+                 // The board just crossed the halfway point upwards and has petals!
+                 releasePetals();
+            }
+            
+            catcherFrameId = requestAnimationFrame(catchPetals);
+        }
+        
+        // Start the catcher loop
+        catchPetals();
+
+        function releasePetals() {
+            physicsActive = true;
+            
+            // Convert to fixed positioning so they fall relative to screen
+            trappedPetals.forEach(p => {
+                const rect = p.getBoundingClientRect();
+                p.style.position = 'fixed';
+                p.physics.x = rect.left;
+                p.physics.y = rect.top;
+                p.style.left = '0px';
+                p.style.top = '0px';
+                document.body.appendChild(p);
+            });
+            
+            // Start physics loop
+            function updatePhysics() {
+                let allFallen = true;
+                
                 trappedPetals.forEach(p => {
-                    const rect = p.getBoundingClientRect();
-                    p.style.position = 'fixed';
-                    // We must calculate the new left/top in fixed viewport coordinates
-                    p.physics.x = rect.left;
-                    p.physics.y = rect.top;
-                    p.style.left = '0px';
-                    p.style.top = '0px';
-                    // Move from the board container to body so transform scales don't affect them
-                    document.body.appendChild(p);
+                    if (!p.parentNode) return;
+                    
+                    p.physics.vy += p.physics.gravity;
+                    p.physics.x += p.physics.vx;
+                    p.physics.y += p.physics.vy;
+                    p.physics.rotation += p.physics.vrot;
+                    
+                    p.style.transform = `translate(${p.physics.x}px, ${p.physics.y}px) rotate(${p.physics.rotation}deg)`;
+                    
+                    // Check if fallen off screen
+                    if (p.physics.y > window.innerHeight + 50) {
+                        p.parentNode.removeChild(p);
+                    } else {
+                        allFallen = false;
+                    }
                 });
                 
-                // Start physics loop
-                function updatePhysics() {
-                    let allFallen = true;
-                    
-                    trappedPetals.forEach(p => {
-                        if (!p.parentNode) return;
-                        
-                        p.physics.vy += p.physics.gravity;
-                        p.physics.x += p.physics.vx;
-                        p.physics.y += p.physics.vy;
-                        p.physics.rotation += p.physics.vrot;
-                        
-                        p.style.transform = `translate(${p.physics.x}px, ${p.physics.y}px) rotate(${p.physics.rotation}deg)`;
-                        
-                        // Check if fallen off screen
-                        if (p.physics.y > window.innerHeight + 50) {
-                            p.parentNode.removeChild(p);
-                        } else {
-                            allFallen = false;
-                        }
-                    });
-                    
-                    if (!allFallen) {
-                        animationFrameId = requestAnimationFrame(updatePhysics);
-                    }
+                if (!allFallen) {
+                    animationFrameId = requestAnimationFrame(updatePhysics);
+                } else {
+                    // Reset so we can catch again if user scrolls back down
+                    trappedPetals.length = 0;
+                    physicsActive = false;
+                    catchPetals();
                 }
-                
-                updatePhysics();
+            }
+            
+            updatePhysics();
+        }
+
+        // Release physics when scrolled past (fallback to ensure it triggers reliably)
+        window.addEventListener('scroll', () => {
+            if (physicsActive) return;
+            const boardRect = nameBoard.getBoundingClientRect();
+            if (boardRect.top < window.innerHeight / 2 && trappedPetals.length > 0) {
+                releasePetals();
             }
         });
     }
