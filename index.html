@@ -1312,21 +1312,27 @@
     // Create new petal every 300ms
     setInterval(createPetal, 300);
 
-    // ── Interactive Physics Petals on Board ──────────────────────────────
-    const nameBoard = document.getElementById('name-board');
-    if (nameBoard) {
-        const trappedPetals = [];
-        let physicsActive = false;
-        let animationFrameId;
-        let catcherFrameId;
+    // ── Interactive Physics Petals on Catchers ──────────────────────────────
+    const catchers = document.querySelectorAll('.petal-catcher');
+    
+    // Initialize state for each catcher
+    const catchersState = Array.from(catchers).map(el => ({
+        element: el,
+        trappedPetals: [],
+        physicsActive: false
+    }));
 
-        // Collision loop to catch falling petals
-        function catchPetals() {
-            if (physicsActive) return; // Stop catching if physics is active
+    let catcherFrameId;
+
+    // Collision loop to catch falling petals
+    function catchPetals() {
+        // Iterate through all catchers
+        catchersState.forEach(state => {
+            if (state.physicsActive) return; // Stop catching for this specific catcher if it has dropped its petals
             
-            const boardRect = nameBoard.getBoundingClientRect();
+            const boardRect = state.element.getBoundingClientRect();
             
-            // Only catch if the board is below the halfway point
+            // Only catch if this specific board is below the halfway point
             if (boardRect.top >= window.innerHeight / 2) {
                 const fallingPetals = document.querySelectorAll('.petal');
                 
@@ -1369,81 +1375,86 @@
                             gravity: 0.05 + Math.random() * 0.02 // Very tiny gravity for slow fall
                         };
                         
-                        nameBoard.appendChild(petal);
-                        trappedPetals.push(petal);
+                        state.element.appendChild(petal);
+                        state.trappedPetals.push(petal);
                     }
                 });
-            } else if (trappedPetals.length > 0) {
+            } else if (state.trappedPetals.length > 0) {
                  // The board just crossed the halfway point upwards and has petals!
-                 releasePetals();
-            }
-            
-            catcherFrameId = requestAnimationFrame(catchPetals);
-        }
-        
-        // Start the catcher loop
-        catchPetals();
-
-        function releasePetals() {
-            physicsActive = true;
-            
-            // Convert to fixed positioning so they fall relative to screen
-            trappedPetals.forEach(p => {
-                const rect = p.getBoundingClientRect();
-                p.style.position = 'fixed';
-                p.physics.x = rect.left;
-                p.physics.y = rect.top;
-                p.style.left = '0px';
-                p.style.top = '0px';
-                document.body.appendChild(p);
-            });
-            
-            // Start physics loop
-            function updatePhysics() {
-                let allFallen = true;
-                
-                trappedPetals.forEach(p => {
-                    if (!p.parentNode) return;
-                    
-                    p.physics.vy += p.physics.gravity;
-                    if (p.physics.vy > 2.5) p.physics.vy = 2.5; // Cap falling speed
-                    
-                    p.physics.x += p.physics.vx;
-                    p.physics.y += p.physics.vy;
-                    p.physics.rotation += p.physics.vrot;
-                    
-                    p.style.transform = `translate(${p.physics.x}px, ${p.physics.y}px) rotate(${p.physics.rotation}deg)`;
-                    
-                    // Check if fallen off screen
-                    if (p.physics.y > window.innerHeight + 50) {
-                        p.parentNode.removeChild(p);
-                    } else {
-                        allFallen = false;
-                    }
-                });
-                
-                if (!allFallen) {
-                    animationFrameId = requestAnimationFrame(updatePhysics);
-                } else {
-                    // Reset so we can catch again if user scrolls back down
-                    trappedPetals.length = 0;
-                    physicsActive = false;
-                    catchPetals();
-                }
-            }
-            
-            updatePhysics();
-        }
-
-        // Release physics when scrolled past (fallback to ensure it triggers reliably)
-        window.addEventListener('scroll', () => {
-            if (physicsActive) return;
-            const boardRect = nameBoard.getBoundingClientRect();
-            if (boardRect.top < window.innerHeight / 2 && trappedPetals.length > 0) {
-                releasePetals();
+                 releasePetals(state);
             }
         });
+        
+        catcherFrameId = requestAnimationFrame(catchPetals);
     }
+    
+    // Start the catcher loop if there are catchers
+    if (catchers.length > 0) {
+        catchPetals();
+    }
+
+    function releasePetals(state) {
+        state.physicsActive = true;
+        
+        // Convert to fixed positioning so they fall relative to screen
+        state.trappedPetals.forEach(p => {
+            const rect = p.getBoundingClientRect();
+            p.style.position = 'fixed';
+            p.physics.x = rect.left;
+            p.physics.y = rect.top;
+            p.style.left = '0px';
+            p.style.top = '0px';
+            document.body.appendChild(p);
+        });
+        
+        let animationFrameId;
+        
+        // Start physics loop for this specific state
+        function updatePhysics() {
+            let allFallen = true;
+            
+            state.trappedPetals.forEach(p => {
+                if (!p.parentNode) return;
+                
+                p.physics.vy += p.physics.gravity;
+                if (p.physics.vy > 2.5) p.physics.vy = 2.5; // Cap falling speed
+                
+                p.physics.x += p.physics.vx;
+                p.physics.y += p.physics.vy;
+                p.physics.rotation += p.physics.vrot;
+                
+                p.style.transform = `translate(${p.physics.x}px, ${p.physics.y}px) rotate(${p.physics.rotation}deg)`;
+                
+                // Check if fallen off screen
+                if (p.physics.y > window.innerHeight + 50) {
+                    p.parentNode.removeChild(p);
+                } else {
+                    allFallen = false;
+                }
+            });
+            
+            if (!allFallen) {
+                animationFrameId = requestAnimationFrame(updatePhysics);
+            } else {
+                // Reset so we can catch again if user scrolls back down
+                state.trappedPetals.length = 0;
+                state.physicsActive = false;
+            }
+        }
+        
+        updatePhysics();
+    }
+
+    // Release physics when scrolled past (fallback to ensure it triggers reliably)
+    window.addEventListener('scroll', () => {
+        catchersState.forEach(state => {
+            if (state.physicsActive) return;
+            const boardRect = state.element.getBoundingClientRect();
+            if (boardRect.top < window.innerHeight / 2 && state.trappedPetals.length > 0) {
+                releasePetals(state);
+            }
+        });
+    });
 </script>
 
 </body>
