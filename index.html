@@ -1362,11 +1362,11 @@
                         petal.physics = {
                             x: 0, 
                             y: 0,
-                            vx: (Math.random() - 0.5) * 8, // Initial lateral push
-                            vy: (Math.random() * -5) - 2,  // Initial upward pop
+                            vx: (Math.random() - 0.5) * 2, // Gentle lateral push
+                            vy: (Math.random() * -1) - 0.2,  // Gentle upward pop
                             rotation: rotation,
-                            vrot: (Math.random() - 0.5) * 15, // Spin velocity
-                            gravity: 0.4 + Math.random() * 0.2
+                            vrot: (Math.random() - 0.5) * 5, // Slower spin
+                            gravity: 0.05 + Math.random() * 0.02 // Very tiny gravity for slow fall
                         };
                         
                         nameBoard.appendChild(petal);
@@ -1406,6 +1406,8 @@
                     if (!p.parentNode) return;
                     
                     p.physics.vy += p.physics.gravity;
+                    if (p.physics.vy > 2.5) p.physics.vy = 2.5; // Cap falling speed
+                    
                     p.physics.x += p.physics.vx;
                     p.physics.y += p.physics.vy;
                     p.physics.rotation += p.physics.vrot;
