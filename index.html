@@ -585,26 +585,26 @@
             height: 100vh;
         }
 
-        /* Theme-matching Sparkles */
-        .sparkle {
+        /* Falling Pink Petals */
+        .petal {
             position: fixed;
-            top: -10px;
-            width: 4px;
-            height: 4px;
-            background-color: #ffffff;
-            border-radius: 50%;
+            top: -50px;
+            width: 15px;
+            height: 15px;
+            background-color: var(--color-blush-pink);
+            border-radius: 0 50% 50% 50%;
             pointer-events: none;
             z-index: 9999;
-            box-shadow: 0 0 8px 2px rgba(247, 231, 206, 0.9), 0 0 15px 5px rgba(220, 174, 187, 0.5);
-            /* Animation added via JS to avoid shorthand duration issues */
+            opacity: 0.8;
+            /* Animation added via JS */
         }
         @keyframes fall {
-            0% { transform: translateY(-5vh) rotate(0deg); }
-            100% { transform: translateY(115vh) rotate(360deg); }
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(115vh) rotate(720deg); }
         }
-        @keyframes twinkle {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        @keyframes sway {
+            0%, 100% { margin-left: 0; }
+            50% { margin-left: 50px; }
         }
         </style>
 </head>
@@ -1267,34 +1267,34 @@
         floatingContainer.appendChild(el);
     }
 
-    // ── Golden Sparkles Effect ─────────────────────────────────────
-    function createSparkle() {
-        const sparkle = document.createElement('div');
-        sparkle.classList.add('sparkle');
+    // ── Falling Petals Effect ─────────────────────────────────────
+    function createPetal() {
+        const petal = document.createElement('div');
+        petal.classList.add('petal');
         
-        sparkle.style.left = Math.random() * 100 + 'vw';
+        petal.style.left = Math.random() * 100 + 'vw';
         
-        const fallDuration = Math.random() * 5 + 4; // 4s to 9s
-        const twinkleDuration = Math.random() * 1 + 0.5; // 0.5s to 1.5s
+        const fallDuration = Math.random() * 5 + 6; // 6s to 11s (petals fall slower)
+        const swayDuration = Math.random() * 2 + 2; // 2s to 4s
         
         // Set animation shorthand with durations
-        sparkle.style.animation = `fall ${fallDuration}s linear forwards, twinkle ${twinkleDuration}s ease-in-out infinite`;
+        petal.style.animation = `fall ${fallDuration}s linear forwards, sway ${swayDuration}s ease-in-out infinite`;
         
-        const size = Math.random() * 3 + 2; // 2px to 5px
-        sparkle.style.width = `${size}px`;
-        sparkle.style.height = `${size}px`;
+        const size = Math.random() * 8 + 10; // 10px to 18px
+        petal.style.width = `${size}px`;
+        petal.style.height = `${size}px`;
 
-        document.body.appendChild(sparkle);
+        document.body.appendChild(petal);
         
         setTimeout(() => {
-            if (sparkle.parentNode) {
-                sparkle.parentNode.removeChild(sparkle);
+            if (petal.parentNode) {
+                petal.parentNode.removeChild(petal);
             }
         }, fallDuration * 1000);
     }
     
-    // Create new sparkle every 150ms
-    setInterval(createSparkle, 150);
+    // Create new petal every 300ms
+    setInterval(createPetal, 300);
 </script>
 
 </body>
