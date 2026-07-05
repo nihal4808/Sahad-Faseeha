@@ -82,6 +82,13 @@
         .uppercase { text-transform: uppercase; }
         .tracking-widest { letter-spacing: 0.1em; }
         .italic { font-style: italic; }
+        
+        .text-xs { font-size: 0.75rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-base { font-size: 1rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
 
         /* Floating Elements Container */
         #floating-elements {
@@ -236,7 +243,7 @@
         .bismillah { font-size: 1.8rem; margin-bottom: 0.5rem; font-weight: 300; }
         .parents-text { font-size: 1.15rem; color: #4a4a4a; line-height: 1.7; }
         .parents-text .small { font-size: 0.95rem; color: #888; }
-        .groom-name, .bride-name { font-size: 3.5rem; margin: 1rem 0; font-weight: normal; }
+        .groom-name, .bride-name { font-size: clamp(2rem, 9vw, 3.5rem); margin: 1rem 0; font-weight: normal; }
         
         .weds-row { display: flex; align-items: center; gap: 1.5rem; width: 100%; max-width: 400px; margin: 1.5rem 0; }
         .divider-h { flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(188, 198, 181, 0.8), transparent); }
@@ -345,15 +352,19 @@
         /* Mobile responsive adjustments */
         @media (max-width: 600px) {
             .hero { padding: 1rem; }
-            .hero-card { padding: 2rem 1rem; }
-            .hero-card h1, .hero-card p, .couple-names h1 { font-size: 2.5rem; }
-            .couple-names h1 { font-size: 3rem; }
-            .font-script { font-size: 1.5rem; }
+            .hero-card { padding: 2.5rem 1rem; }
+            .couple-names h1 { font-size: clamp(3rem, 12vw, 4.5rem); }
+            .couple-names .ampersand { font-size: clamp(2rem, 8vw, 3.5rem); }
+            
             .music-wrap { bottom: 1rem; right: 1rem; }
             .music-btn { width: 3rem; height: 3rem; }
             .music-label { font-size: 0.6rem; }
+            
             .events-grid { grid-template-columns: 1fr; }
             .event-card { padding: 2rem 1rem; }
+            
+            .countdown-box { width: 3.5rem; height: 3.5rem; font-size: 1.25rem; }
+            .countdown-container { gap: 0.5rem; }
         }
 
         /* Splash Overlay Styles */
@@ -596,7 +607,7 @@
 
             <div class="weds-row fade-up">
                 <div class="divider-h"></div>
-                <span class="font-script" style="font-size: 2.5rem; color: var(--color-sage-green); animation: slowPulse 3s infinite alternate;">weds</span>
+                <span class="font-script" style="font-size: clamp(1.8rem, 6vw, 2.5rem); color: var(--color-sage-green); animation: slowPulse 3s infinite alternate;">weds</span>
                 <div class="divider-h"></div>
             </div>
 
@@ -626,7 +637,7 @@
     <section id="events" class="container">
         <div class="text-center fade-up" style="margin-bottom: 3rem;">
             <span class="font-sans" style="font-size: 1.5rem; font-weight: 300; display: block; margin-bottom: 1rem; color: #666;">إن شاء الله</span>
-            <h2 class="font-script" style="font-size: 4.5rem; color: var(--foreground);">Wedding Details</h2>
+            <h2 class="font-script" style="font-size: clamp(3rem, 10vw, 4.5rem); color: var(--foreground);">Wedding Details</h2>
         </div>
 
         <div class="events-grid">
