@@ -30,7 +30,7 @@
             
             --font-script: 'Pinyon Script', 'Edwardian Script ITC', 'Great Vibes', cursive;
             --font-heading: 'Cormorant Garamond', serif;
-            --font-sans: 'Inter', sans-serif;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -41,7 +41,7 @@
             font-family: var(--font-sans);
             color: var(--foreground);
             background-color: var(--background);
-            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.03"/></svg>'), linear-gradient(135deg, rgba(253, 251, 247, 1) 0%, rgba(255, 209, 220, 0.15) 50%, rgba(188, 198, 181, 0.15) 100%);
+            background-image: linear-gradient(135deg, rgba(253, 251, 247, 1) 0%, rgba(255, 209, 220, 0.15) 50%, rgba(188, 198, 181, 0.15) 100%);
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
@@ -1034,8 +1034,8 @@
         }
     }
 
-    // Auto‑play on page load (muted) – start immediately
-    startMusic();
+    // Wait for user interaction to start music (fixes Android playback issues)
+    // startMusic();
 
     // Mute / Unmute toggle
     musicBtn.addEventListener('click', () => {
@@ -1108,7 +1108,10 @@
     }
 
     splashOverlay.addEventListener('click', startEntrance);
-    splashOverlay.addEventListener('touchstart', startEntrance);
+    splashOverlay.addEventListener('touchend', (e) => {
+        e.preventDefault(); // Prevent duplicate firing
+        startEntrance();
+    });
     splashOverlay.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') startEntrance();
     });
@@ -1309,8 +1312,8 @@
         }, fallDuration * 1000);
     }
     
-    // Create new petal every 300ms
-    setInterval(createPetal, 300);
+    // Create new petal every 800ms to reduce DOM elements (performance)
+    setInterval(createPetal, 800);
 
     // ── Interactive Physics Petals on Catchers ──────────────────────────────
     const catchers = document.querySelectorAll('.petal-catcher');
@@ -1324,8 +1327,19 @@
 
     let catcherFrameId;
 
+    // Throttling variables for collision check
+    let lastCatchTime = 0;
+
     // Collision loop to catch falling petals
-    function catchPetals() {
+    function catchPetals(timestamp) {
+        // Throttle to run every ~100ms instead of 16ms to prevent lag
+        if (!lastCatchTime) lastCatchTime = timestamp;
+        if (timestamp - lastCatchTime < 100) {
+            catcherFrameId = requestAnimationFrame(catchPetals);
+            return;
+        }
+        lastCatchTime = timestamp;
+
         // Iterate through all catchers
         catchersState.forEach(state => {
             if (state.physicsActive) return; // Stop catching for this specific catcher if it has dropped its petals
